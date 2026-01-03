@@ -3,7 +3,7 @@
 ## Project Overview
 The phishing website detection system is a web-based application built using a hybrid ensemble of XGBoost and LightGBM. The system is designed to identify phishing websites and protect users from online fraud.
 
-The system analyzes website URLs and determines whether a website is phishing or legitimate based on extracted URL-based features. This project was designed and developed by me as part of my MCA academic project (VTU) using Python, Flask, and machine learning techniques.
+The system analyzes website URLs and determines whether a website is phishing or legitimate based on extracted URL-based features. This project was designed and developed by  using Python, Flask, and machine learning techniques.
 
 ## Objectives
 - Detect phishing websites using URL-based feature analysis
