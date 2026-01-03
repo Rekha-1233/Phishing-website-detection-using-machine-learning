@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Management Dashboard</title>
+    <style>
+        body {
+            font-family: "Poppins", "Segoe UI", sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            margin: 20px auto;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1a2a4f;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        .stat-box {
+            background: #ffffff;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 30%;
+            transition: transform 0.2s;
+        }
+        .stat-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .stat-box h3 {
+            margin: 0;
+            font-size: 28px;
+            color: #0d6efd;
+        }
+        .stat-box p {
+            margin: 5px 0 0 0;
+            color: #555;
+            font-weight: 500;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #0d6efd;
+            color: #fff;
+        }
+        .logged-in {
+            color: green;
+            font-weight: bold;
+        }
+        .never-logged {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>User Management Dashboard</h2>
+
+    <!-- Dashboard Stats -->
+    <div class="stats">
+        <div class="stat-box">
+            <h3>{{ users|length }}</h3>
+            <p>Total Users</p>
+        </div>
+        <div class="stat-box">
+            <h3>{{ users|selectattr("login_count", "gt", 0)|list|length }}</h3>
+            <p>Users Logged In</p>
+        </div>
+        <div class="stat-box">
+            <h3>{{ users|selectattr("login_count", "equalto", 0)|list|length }}</h3>
+            <p>Never Logged In</p>
+        </div>
+    </div>
+
+    <!-- User Table -->
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Login Count</th>
+            <th>Last Login</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role }}</td>
+            <td>
+                {% if user.login_count > 0 %}
+                    <span class="logged-in">{{ user.login_count }}</span>
+                {% else %}
+                    <span class="never-logged">0</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if user.last_login %}
+                    {{ user.last_login }}
+                {% else %}
+                    <span class="never-logged">Never</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+</body>
+</html>

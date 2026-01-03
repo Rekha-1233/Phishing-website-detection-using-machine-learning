@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🔍 URL Scan History</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #121212;
+      color: #f1f1f1;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .history-container {
+      max-width: 1200px;
+      margin: 40px auto;
+    }
+
+    .history-card {
+      background-color: #1f1f1f;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+      transition: 0.3s;
+    }
+
+    .history-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.1);
+    }
+
+    .badge-phish {
+      background-color: #e53935;
+    }
+
+    .badge-legit {
+      background-color: #43a047;
+    }
+
+    .confidence-bar {
+      height: 8px;
+      border-radius: 5px;
+      margin-top: 6px;
+    }
+
+    .filter-btns {
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .filter-btns .btn {
+      margin: 5px;
+    }
+
+    .search-box {
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    .timestamp {
+      color: #ccc;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container history-container">
+  <h2 class="mb-4 text-center">📄 URL Scan History</h2>
+
+  <div class="filter-btns">
+    <button class="btn btn-outline-light btn-sm" onclick="filterCards('all')">All</button>
+    <button class="btn btn-outline-danger btn-sm" onclick="filterCards('Phishing')">Phishing</button>
+    <button class="btn btn-outline-success btn-sm" onclick="filterCards('Legitimate')">Legitimate</button>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="🔎 Search URL..." onkeyup="searchURLs()">
+  </div>
+
+  {% if data %}
+    {% for row in data %}
+      <div class="history-card" data-result="{{ row[2] if role == 'admin' else row[1] }}" data-url="{{ row[1] if role == 'admin' else row[0] }}">
+        <div class="row">
+          {% if role == 'admin' %}
+            <div class="col-md-3"><strong>User:</strong> {{ row[0] }}</div>
+            <div class="col-md-5"><strong>URL:</strong> {{ row[1] }}</div>
+            <div class="col-md-2">
+              <strong>Status:</strong>
+              {% if row[2] == 'Phishing' %}
+                <span class="badge badge-phish text-white">Phishing</span>
+              {% else %}
+                <span class="badge badge-legit text-white">Legitimate</span>
+              {% endif %}
+            </div>
+            <div class="col-md-2"><strong>Confidence:</strong> {{ row[3]|round(2) }}%</div>
+            <div class="col-md-12 mt-2">
+              <div class="confidence-bar bg-info" style="width: {{ row[3]|round(0) }}%"></div>
+              <div class="timestamp">🕒 Scanned on: {{ row[4] | datetimeformat }}</div>
+            </div>
+          {% else %}
+            <div class="col-md-6"><strong>URL:</strong> {{ row[0] }}</div>
+            <div class="col-md-3">
+              <strong>Status:</strong>
+              {% if row[1] == 'Phishing' %}
+                <span class="badge badge-phish text-white">Phishing</span>
+              {% else %}
+                <span class="badge badge-legit text-white">Legitimate</span>
+              {% endif %}
+            </div>
+            <div class="col-md-3"><strong>Confidence:</strong> {{ row[2]|round(2) }}%</div>
+            <div class="col-md-12 mt-2">
+              <div class="confidence-bar bg-info" style="width: {{ row[2]|round(0) }}%"></div>
+              <div class="timestamp">🕒 Scanned on: {{ row[3] | datetimeformat }}</div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-center text-muted">No scan history available.</p>
+  {% endif %}
+
+  <div class="text-center mt-4">
+    <a href="/dashboard" class="btn btn-outline-light">
+      <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+</div>
+
+<script>
+  function filterCards(type) {
+    const cards = document.querySelectorAll(".history-card");
+    cards.forEach(card => {
+      const result = card.getAttribute("data-result");
+      if (type === "all" || result === type) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  }
+
+  function searchURLs() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+    const cards = document.querySelectorAll(".history-card");
+    cards.forEach(card => {
+      const url = card.getAttribute("data-url").toLowerCase();
+      if (url.includes(input)) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

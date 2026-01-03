@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Phishing Website Detector</title>
+    <script>
+        function toggleInput() {
+            const method = document.querySelector('input[name="input_method"]:checked').value;
+            document.getElementById("url_input").style.display = method === "url" ? "block" : "none";
+            document.getElementById("manual_input").style.display = method === "manual" ? "block" : "none";
+        }
+        window.onload = toggleInput;
+    </script>
+    <style>
+       body { font-family: Arial; padding: 30px; background: #f9f9f9; }
+       input[type="text"], input[type="number"] {
+           width: 100%;
+           max-width: 400px;
+           padding: 8px;
+           margin: 5px 0;
+           border: 1px solid #ccc;
+           border-radius: 5px;
+       }
+       button {
+           padding: 10px 20px;
+           background: #0078D7;
+           color: #fff;
+           border: none;
+           border-radius: 5px;
+           cursor: pointer;
+       }
+       .result {
+           background: #fff;
+           padding: 15px;
+           border-radius: 5px;
+           border: 1px solid #ccc;
+           margin-top: 20px;
+       }
+       .error {
+           color: red;
+           margin-top: 10px;
+       }
+    </style>
+</head>
+<body>
+    <h1>🔍 Phishing Website Detector</h1>
+    
+    <form method="POST">
+        <label><input type="radio" name="input_method" value="url" checked onclick="toggleInput()"> Enter URL</label>
+        <label><input type="radio" name="input_method" value="manual" onclick="toggleInput()"> Enter 12 Features</label>
+
+        <div id="url_input" style="margin-top: 10px;">
+            <input type="text" name="url" placeholder="Paste URL here" value="{{ url or '' }}">
+        </div>
+
+        <div id="manual_input" style="display: none;">
+            <h3>Manual Feature Input</h3>
+            {% for i in range(1, 13) %}
+                <input type="number" step="any" name="f{{ i }}" placeholder="Feature {{ i }}"><br>
+            {% endfor %}
+        </div>
+
+        <button type="submit">🚀 Predict</button>
+    </form>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {% if rf_result or xgb_result or lgbm_result or cat_result or hybrid1_result or hybrid2_result or hybrid3_result or consensus_result %}
+        <div class="result">
+            <h3>🔎 Prediction Results:</h3>
+            {% if url %}<p><strong>URL:</strong> {{ url }}</p>{% endif %}
+            {% if rf_result %}<p>🌲 <strong>Random Forest:</strong> {{ rf_result }}</p>{% endif %}
+            {% if xgb_result %}<p>⚡ <strong>XGBoost:</strong> {{ xgb_result }}</p>{% endif %}
+            {% if lgbm_result %}<p>💡 <strong>LightGBM:</strong> {{ lgbm_result }}</p>{% endif %}
+            {% if cat_result %}<p>🐈 <strong>CatBoost:</strong> {{ cat_result }}</p>{% endif %}
+            {% if hybrid1_result %}<p>🔗 <strong>Hybrid XGB + LGBM:</strong> {{ hybrid1_result }}</p>{% endif %}
+            {% if hybrid2_result %}<p>🤝 <strong>Hybrid CatBoost + XGBoost:</strong> {{ hybrid2_result }}</p>{% endif %}
+            {% if hybrid3_result %}<p>🧠🧪 <strong>Hybrid CatBoost + LightGBM:</strong> {{ hybrid3_result }}</p>{% endif %}
+            {% if consensus_result %}<p>🛡️ <strong>Consensus Hybrid:</strong> {{ consensus_result }}</p>{% endif %}
+        </div>
+    {% endif %}
+</body>
+</html>

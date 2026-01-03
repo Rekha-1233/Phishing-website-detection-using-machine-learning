@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishGuard Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #f1f5f9;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .sidebar {
+      background-color: #1e293b;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    .sidebar a {
+      color: #9ca3af;
+      display: block;
+      padding: 0.75rem 1rem;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .sidebar a:hover, .sidebar a.active {
+      background-color: #2563eb;
+      color: white;
+      transform: scale(1.05);
+    }
+    .card-dark {
+      background-color: #1e293b;
+      border: none;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card-dark:hover {
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+      transform: scale(1.02);
+    }
+    .navbar {
+      background-color: #1f2937;
+    }
+    canvas {
+      background-color: #1e293b;
+      border-radius: 1rem;
+      padding: 1rem;
+    }
+    .badge-phishing {
+      background-color: #dc2626;
+    }
+    .badge-legit {
+      background-color: #16a34a;
+    }
+    #preloader {
+      background:#0f172a; position:fixed; inset:0; z-index:1000;
+      display:flex; align-items:center; justify-content:center;
+    }
+  </style>
+</head>
+<body>
+<div id="preloader">
+  <div class="spinner-border text-info" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+<div class="d-flex">
+  <div class="sidebar">
+    <h4 class="text-white mb-4">🔒 PhishGuard AI</h4>
+    <a href="#" class="active"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+    <a href="/predict"><i class="fas fa-link me-2"></i> URL Scanner</a>
+    <a href="/batch"><i class="fas fa-copy me-2"></i> Batch Analysis</a>
+    <a href="/history"><i class="fas fa-history me-2"></i> History</a>
+    <a href="/feature_extractor"><i class="fas fa-filter me-2"></i> Feature Prediction</a>
+    <a href="/explainability"><i class="fas fa-lightbulb me-2"></i> Explainability</a>
+    <a href="/user_management"><i class="fas fa-users-cog me-2"></i> User Management</a>
+    <a href="/logout"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+  </div>
+
+  <div class="flex-grow-1 p-4">
+    <nav class="navbar navbar-expand navbar-dark mb-4 px-3">
+      <div class="dropdown ms-auto">
+        <a class="text-white dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+          👤 {{ username }} ({{ role }})
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="/profile">Profile</a></li>
+          <li><a class="dropdown-item" href="/logout">Logout</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <h3 class="fw-bold text-info">Security Dashboard</h3>
+    <p class="text-secondary">Real-time threat detection & system analytics</p>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card-dark">
+          <h6>URLs Analyzed Today</h6>
+          <h3>{{ urls_analyzed_today }}</h3>
+          <small class="text-success">+15.2% from yesterday</small>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card-dark">
+          <h6>Threats Blocked</h6>
+          <h3>{{ threats_blocked_today }}</h3>
+          <small class="text-danger">-8.1% from yesterday</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart + Recent Threats Side-by-Side -->
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card-dark">
+          <h5 class="mb-3">Threat Detection History</h5>
+          <canvas id="historyChart" height="260"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card-dark">
+          <h5>Recent Threat Detections</h5>
+          <ul class="list-group list-group-flush">
+            {% for url, result, confidence, timestamp in recent_urls %}
+            <li class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ url }}</strong><br>
+                <span class="badge {% if result == 'Phishing' %}badge-phishing{% else %}badge-legit{% endif %}">{{ result }}</span>
+                <span class="ms-2 text-muted small">Confidence: {{ (confidence * 100) | round(2) }}%</span>
+              </div>
+              <small class="text-muted">{{ timestamp }}</small>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notifications -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="toast align-items-center text-bg-{{ 'success' if category == 'success' else 'danger' }} show" role="alert">
+          <div class="d-flex">
+            <div class="toast-body">{{ message }}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+
+<script>
+  window.onload = () => {
+    document.getElementById('preloader').style.display = 'none';
+  };
+
+  const ctx = document.getElementById('historyChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['7d ago', '6d', '5d', '4d', '3d', '2d', 'Yesterday', 'Today'],
+      datasets: [
+        {
+          label: 'URLs Analyzed',
+          data: [30, 40, 50, 48, 55, 62, 70, {{ urls_analyzed_today }}],
+          backgroundColor: '#38bdf8',
+          borderRadius: 8
+        },
+        {
+          label: 'Phishing URLs',
+          data: [4, 6, 5, 7, 8, 11, 13, {{ threats_blocked_today }}],
+          backgroundColor: '#f43f5e',
+          borderRadius: 8
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: '#f1f5f9' } },
+        title: {
+          display: true,
+          text: 'Detection Overview',
+          color: '#f1f5f9',
+          font: { size: 18 }
+        },
+        tooltip: {
+          backgroundColor: '#1e293b',
+          titleColor: '#f1f5f9',
+          bodyColor: '#e2e8f0'
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#cbd5e1' },
+          grid: { color: '#334155' }
+        },
+        y: {
+          ticks: { color: '#cbd5e1' },
+          grid: { color: '#334155' }
+        }
+      }
+    }
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Explainability Report</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #f1f1f1;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .card {
+      background: rgba(30, 30, 30, 0.9);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    h3 {
+      color: #00e6e6;
+      font-weight: 600;
+    }
+    h5 {
+      color: #ffcc70;
+      font-weight: 500;
+    }
+    .status-legit {
+      color: #4caf50;
+      font-weight: bold;
+    }
+    .status-phish {
+      color: #ff5252;
+      font-weight: bold;
+    }
+    .bar-container {
+      width: 100%;
+      background: #2b2b2b;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .bar {
+      height: 22px;
+      border-radius: 6px;
+      transition: width 0.4s ease;
+    }
+    .bar-positive {
+      background: linear-gradient(90deg, #4caf50, #81c784);
+    }
+    .bar-negative {
+      background: linear-gradient(90deg, #ff5252, #ef9a9a);
+    }
+    th {
+      background: #2c2c2c !important;
+      color: #f1f1f1;
+    }
+    .table-dark tbody tr:nth-child(odd) {
+      background-color: #1a1a1a !important;
+    }
+    .feature-row:hover {
+      background-color: #333 !important;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: transform 0.3s ease;
+    }
+    .btn-primary:hover {
+      transform: scale(1.05);
+      background: linear-gradient(90deg, #0072ff, #00c6ff);
+    }
+    /* Force horizontal layout */
+    .explanation-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .explanation-column {
+      flex: 1;
+      min-width: 400px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card shadow-lg">
+    <h3 class="text-center mb-4">Explainability Report</h3>
+
+    <form method="POST" class="mb-4 d-flex" role="search">
+      <input 
+        type="url" 
+        name="url" 
+        class="form-control me-2" 
+        placeholder="Enter a URL to scan" 
+        required 
+      />
+      <button type="submit" class="btn btn-primary px-4">Scan</button>
+    </form>
+
+    {% if result %}
+    <div class="mb-3">
+      <h5>
+        <strong>Scanned URL:</strong> 
+        <a href="{{ result.url }}" target="_blank" class="text-decoration-none text-info">{{ result.url }}</a>
+      </h5>
+    </div>
+
+    <div class="d-flex justify-content-between mb-4 align-items-center">
+      <div><strong>Status:</strong>
+        {% if result.status == "Legitimate" %}
+          <span class="status-legit">{{ result.status }}</span>
+        {% else %}
+          <span class="status-phish">{{ result.status }}</span>
+        {% endif %}
+      </div>
+      <div><strong>Confidence:</strong> {{ result.confidence }}%</div>
+    </div>
+
+    <!-- HORIZONTAL LAYOUT FOR EXPLANATIONS -->
+    <div class="explanation-container">
+      <!-- SHAP Table -->
+      <div class="explanation-column">
+        <h5 class="text-center mb-3">SHAP Feature Contributions</h5>
+        <table class="table table-striped table-dark align-middle">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th class="text-center">Impact</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in result.shap %}
+            <tr class="feature-row">
+              <td>{{ item.feature }}</td>
+              <td class="text-center">
+                <div class="bar-container" title="Impact: {{ item.impact | round(6) }}">
+                  {% if item.impact > 0 %}
+                    <div class="bar bar-positive" style="width: {{ (item.impact * 100) | abs }}%"></div>
+                  {% else %}
+                    <div class="bar bar-negative" style="width: {{ (item.impact * 100) | abs }}%"></div>
+                  {% endif %}
+                </div>
+                <small>{{ item.impact | round(6) }}</small>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- LIME Table -->
+      <div class="explanation-column">
+        <h5 class="text-center mb-3">LIME Feature Contributions</h5>
+        <table class="table table-striped table-dark align-middle">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th class="text-center">Impact</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in result.lime %}
+            <tr class="feature-row">
+              <td>{{ item.feature }}</td>
+              <td class="text-center">
+                <div class="bar-container" title="Impact: {{ item.impact | round(6) }}">
+                  {% if item.impact > 0 %}
+                    <div class="bar bar-positive" style="width: {{ (item.impact * 100) | abs }}%"></div>
+                  {% else %}
+                    <div class="bar bar-negative" style="width: {{ (item.impact * 100) | abs }}%"></div>
+                  {% endif %}
+                </div>
+                <small>{{ item.impact | round(6) }}</small>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% else %}
+      <p class="text-light text-center fs-5 mt-4">🔍 Enter a URL above and click <strong>Scan</strong> to see SHAP &amp; LIME explainability here.</p>
+    {% endif %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+  

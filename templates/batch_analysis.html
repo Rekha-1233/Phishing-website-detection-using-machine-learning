@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Batch URL Analysis</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #141E30, #243B55);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        color: #fff;
+      }
+
+      .container {
+        background: rgba(255, 255, 255, 0.08);
+        padding: 2rem 3rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        text-align: center;
+        width: 400px;
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        color: #00e6e6;
+      }
+
+      label {
+        font-size: 1rem;
+        display: block;
+        margin-bottom: 0.8rem;
+      }
+
+      input[type="file"] {
+        padding: 0.5rem;
+        border-radius: 8px;
+        background: #fff;
+        color: #333;
+        border: none;
+        outline: none;
+        width: 100%;
+        margin-bottom: 1rem;
+        cursor: pointer;
+      }
+
+      button {
+        padding: 0.7rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        background: #00e6e6;
+        color: #141E30;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s ease;
+      }
+
+      button:hover {
+        background: #00b3b3;
+        transform: scale(1.05);
+      }
+
+      .flashes {
+        margin-top: 1.5rem;
+        list-style: none;
+        padding: 0;
+      }
+
+      .flashes li {
+        background: #ff4d4d;
+        padding: 0.7rem;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+        animation: slideIn 0.5s ease;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Batch URL Analysis</h1>
+      <form action="{{ url_for('batch_analysis') }}" method="post" enctype="multipart/form-data">
+        <label for="file">Upload CSV file with a column named 'url':</label>
+        <input type="file" name="file" accept=".csv" required>
+        <button type="submit">Analyze URLs</button>
+      </form>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul class="flashes">
+            {% for msg in messages %}
+              <li>{{ msg }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+    </div>
+  </body>
+</html>

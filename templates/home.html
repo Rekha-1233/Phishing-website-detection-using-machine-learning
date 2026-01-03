@@ -1,0 +1,28 @@
+<!-- templates/home.html -->
+{% include 'navbar.html' %}
+
+<div class="container py-5" id="homePage">
+    <div class="row align-items-center">
+        <div class="col-md-6 text-center text-md-start">
+            <h1 class="display-4 fw-bold"> PhishGuard</h1>
+            <p class="lead mt-3">
+                Protect yourself from phishing attacks in real-time.
+                Use our smart URL scanner to detect threats before you click!
+            </p>
+            <div class="mt-4">
+                <button class="btn btn-primary btn-lg me-2" onclick="showLogin()">Login</button>
+                <button class="btn btn-outline-primary btn-lg" onclick="showRegister()">Register</button>
+            </div>
+        </div>
+        <div class="col-md-6 text-center mt-5 mt-md-0">
+            <img src="{{ url_for('static', filename='images/security.svg') }}" alt="Security Illustration" class="img-fluid" style="max-height: 320px;">
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show homePage on load
+    document.addEventListener('DOMContentLoaded', function () {
+        showHome();
+    });
+</script>

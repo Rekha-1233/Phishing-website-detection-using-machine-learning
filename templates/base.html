@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Phishing Detection{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 40px;
+            background-color: #0d47a1;
+            color: white;
+        }
+
+        .top-bar .left a {
+            margin-right: 25px;
+            color: white;
+            text-decoration: none;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .top-bar .left a:hover {
+            text-decoration: underline;
+        }
+
+        .top-bar .right {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .top-bar .right a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 12px;
+            font-size: 22px;
+        }
+
+        .top-bar .right a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ✅ Top Navigation Bar -->
+<div class="top-bar">
+    <div class="left">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/scan">Scan URL</a>
+        <a href="/predict_features">Feature Scan</a>
+        <a href="/history">History</a>
+    </div>
+    <div class="right">
+        Welcome, Rekha |
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<!-- Main Page Content -->
+{% block content %}{% endblock %}
+
+</body>
+</html>

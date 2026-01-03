@@ -1,0 +1,31 @@
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Trained ML/DL models
+*.h5
+*.keras
+*.pkl
+model.pkl
+scaler.pkl
+cnn_scaler.pkl
+catboost_info/
+
+# Data & outputs
+Data/
+processed/
+processed_final/
+output/
+uploads/
+database.db
+scan_history.json
+
+# Training plots & random images
+roc_auc_curve.png
+compare*.png
+perplexiety.png
+Figure_1final.png
+ai-generated-*.jpg

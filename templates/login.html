@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phishing Detection | Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "Poppins", "Segoe UI", sans-serif;
+      background-color: #edf3fb; /* 👈 Soft bluish-grey */
+    }
+
+    .container-flex {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+    }
+
+    /* Left Login Panel */
+    .left-panel {
+      width: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background-color: #edf3fb; /* same as body */
+    }
+
+    /* Right Image Panel (no fading overlay) */
+    .right-panel {
+      width: 50%;
+      background: #edf3fb url("/static/images/upi.png") no-repeat center center;
+      background-size: cover;
+      border-left: 3px solid #d6e4ff;
+    }
+
+    .card {
+      background: #ffffff;
+      border: none;
+      border-radius: 16px;
+      padding: 40px 30px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .card h3 {
+      font-weight: 600;
+      font-size: 22px;
+      text-align: center;
+      margin-bottom: 8px;
+      color: #1a2a4f;
+    }
+
+    .card p {
+      text-align: center;
+      color: #555;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .nav-tabs {
+      border-bottom: none;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .nav-tabs .nav-link {
+      border: none;
+      font-weight: 500;
+      color: #666;
+    }
+
+    .nav-tabs .nav-link.active {
+      color: #0d6efd;
+      border-bottom: 2px solid #0d6efd;
+    }
+
+    .form-label {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .form-control {
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccd7ff;
+    }
+
+    .btn-login {
+      background: linear-gradient(90deg, #0d6efd, #4a8cff);
+      color: white;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 15px;
+      border: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-login:hover {
+      background: linear-gradient(90deg, #0a58ca, #2e6ee9);
+      transform: scale(1.02);
+    }
+
+    .text-muted a {
+      color: #0d6efd;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .text-muted a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .container-flex {
+        flex-direction: column;
+      }
+      .right-panel {
+        width: 100%;
+        height: 200px;
+        border-left: none;
+        border-top: 3px solid #d6e4ff;
+      }
+      .left-panel {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container-flex">
+  <!-- Left Panel: Login -->
+  <div class="left-panel">
+    <div class="card">
+      <h3><i class="fas fa-shield-alt text-primary"></i> Secure Login</h3>
+      <p>Phishing Detection using ML</p>
+
+      <!-- Tabs for User / Admin -->
+      <ul class="nav nav-tabs" id="loginTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="user-tab" data-bs-toggle="tab" data-bs-target="#user" type="button" role="tab">User Login</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button" role="tab">Admin Login</button>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <!-- User Login Form -->
+        <div class="tab-pane fade show active" id="user" role="tabpanel">
+          <form method="POST" action="/login">
+            <input type="hidden" name="login_type" value="user" />
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="text" class="form-control" name="username" placeholder="user@example.com" required />
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-control" name="password" placeholder="Enter your password" required />
+            </div>
+            <button type="submit" class="btn btn-login w-100">Sign In</button>
+            <div class="text-center mt-3">
+              <small class="text-muted">Don't have an account? <a href="/register">Register</a></small>
+            </div>
+          </form>
+        </div>
+
+        <!-- Admin Login Form -->
+        <div class="tab-pane fade" id="admin" role="tabpanel">
+          <form method="POST" action="/login">
+            <input type="hidden" name="login_type" value="admin" />
+            <div class="mb-3">
+              <label class="form-label">Admin Username</label>
+              <input type="text" class="form-control" name="username" placeholder="admin" required />
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-control" name="password" placeholder="Enter admin password" required />
+            </div>
+            <button type="submit" class="btn btn-login w-100">Sign In</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Right Panel: Image (no fading) -->
+  <div class="right-panel"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
