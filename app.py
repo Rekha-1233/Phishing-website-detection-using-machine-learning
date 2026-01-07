@@ -154,8 +154,8 @@ def init_db():
 
 
 def send_alert_email(username, email, url, confidence):
-    sender_email = "rekhalanjwade@gmail.com"
-    sender_password = "jxns mfyt deyb gokd"
+    sender_email = "email@gmail.com"
+    sender_password = "password"
     subject_text = "\U0001F6A8 Phishing URL Alert!"
     body = (
         f"Hi {username},\n\n"
